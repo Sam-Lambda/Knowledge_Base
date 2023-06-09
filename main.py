@@ -1,6 +1,6 @@
 import os
 from Server.loader import text_content_chunks
-from langchain.chat_models import Message
+from langchain.prompts import PromptTemplate, ChatPromptTemplate
 
 os.environ["OPENAI_API_KEY"] = "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"
 from langchain.chat_models import ChatOpenAI
@@ -16,20 +16,29 @@ from langchain.schema import (
     SystemMessage
 )
 chat = ChatOpenAI(client=None, model="gpt-3.5-turbo", temperature=0.9)
-text = "Tell me the recent news about gaming"
-#message = [HumanMessage(content=text)]
+text = "Considering the texts I sent please summarize them"
+message = HumanMessage(content=text)
 #print(chat(message))
 
 # Initialize the conversation with a system message
-messages = [Message(role="system", content="You are a helpful assistant.")]
+#messages = [{"role": "system", "content": "You are a helpful assistant."}]
 
 # Add user messages for each chunk of text
+
+messages = [message]
+i = 0
 for chunk in text_content_chunks:
-    messages.append(Message(role="user", content=f"Do something with this text: '{chunk}'"))
+    # if i == 2:
+    #     messages.append(HumanMessage(content = f"{chunk}"))
+    #     print(chunk)
+    # i += 1
+    response = chat(messages=[HumanMessage(content=f"Consider the following texts: {chunk}")])
+    print(response.content)
+    print()
 
 # Create the chat completion
-response = chat(messages)
-
+response = chat(messages=messages)
+print()
+# print(response)
 # Print the assistant's responses
-for message in response.messages:
-    print(message.content)
+print(response.content)
